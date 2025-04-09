@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: restore-job
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: cloudsql-workload-sa
+      containers:
+        - name: restore
+          image: gcr.io/YOUR_PROJECT/unified-backup:latest
+          command: ["python", "/restore.py"]
+          env:
+            - name: ENABLE_PG_RESTORE
+              value: "true"
+            - name: ENABLE_BQ_RESTORE
+              value: "true"
+            - name: PGUSER
+              value: "you@yourdomain.com"
+            - name: DB_NAME
+              value: "target_db_name"
+            - name: INSTANCE_CONNECTION_NAME
+              value: "your-project:region:instance"
+            - name: GCS_BUCKET
+              value: "your-backup-bucket"
+            - name: RESTORE_FILE
+              value: "db1-2025-04-09.sql.gz"
+            - name: RESTORE_DATE
+              value: "2025-04-09"
+            - name: BQ_PROJECT
+              value: "your-bigquery-project"
+            - name: BQ_DATASET
+              value: "dataset1"
+          volumeMounts:
+            - name: cloudsql
+              mountPath: /cloudsql
+            - name: restore-disk
+              mountPath: /restore
+        - name: cloudsql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.33.7
+          command:
+            - "/cloud_sql_proxy"
+            - "-dir=/cloudsql"
+            - "-instances=your-project:region:instance"
+            - "-run_as_user=2"
+            - "-run_as_group=2"
+          volumeMounts:
+            - name: cloudsql
+              mountPath: /cloudsql
+      volumes:
+        - name: cloudsql
+          emptyDir: {}
+        - name: restore-disk
+          persistentVolumeClaim:
+            claimName: pgsql-backup-pvc
