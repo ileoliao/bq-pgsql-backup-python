@@ -3,7 +3,7 @@
 This project provides a unified, Kubernetes-native solution for backing up and restoring:
 
 - **Cloud SQL (PostgreSQL)** using `pg_dump` with IAM authentication
-- **BigQuery datasets** using `bq extract/load` with **AVRO** format
+- **BigQuery datasets** using `bq extract/load` with **** format
 
 Designed to run as a Kubernetes CronJob or one-time Job, this solution supports multiple PostgreSQL databases and multiple BigQuery datasets in a single container and run.
 
