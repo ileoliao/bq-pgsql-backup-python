@@ -1,6 +1,6 @@
 # 🛡️ Unified GCP Backup & Restore (Python-based, Multi-DB + Multi-Dataset)
 
-This project provides a unified, Kubernetes-native solution for backing up and restoring:
+
 
 - **Cloud SQL (PostgreSQL)** using `pg_dump` with IAM authentication
 - **BigQuery datasets** using `bq extract/load` with **** format
